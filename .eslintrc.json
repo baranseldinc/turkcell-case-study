@@ -19,13 +19,17 @@
         "react"
     ],
     "rules": {
-        "react/react-in-jsx-scope": "off",
-        "no-console": "off",
-        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
-        "object-curly-spacing": "error",
+        "import/no-extraneous-dependencies": "off",
         "import/prefer-default-export": "off",
-        "react/function-component-definition": "off",
+        "jsx-a11y/anchor-is-valid": "off",
+        "no-console": "off",
+        "no-param-reassign": "off",
+        "no-unused-vars": "warn",
+        "object-curly-spacing": "error",
         "react/button-has-type": "off",
-        "no-param-reassign": "off"
+        "react/function-component-definition": "off",
+        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+        "react/prop-types": "off",
+        "react/react-in-jsx-scope": "off"
     }
 }
