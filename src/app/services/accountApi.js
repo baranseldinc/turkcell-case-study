@@ -8,6 +8,7 @@ export const accountApi = createApi({
       return headers
     }
   }),
+  tagTypes: ['School'],
   endpoints: (builder) => ({
     getPagedSchoolList: builder.query({
       query: ({ pageNumber, pageSize, allRecords, recordStatus }) => ({
@@ -25,6 +26,7 @@ export const accountApi = createApi({
           PageSize: pageSize
         }
       }),
+      providesTags: ['School'],
       transformResponse: (response) => {
         if (response?.success) {
           return {
@@ -47,7 +49,7 @@ export const accountApi = createApi({
         }
       },
       transformResponse: (response) =>
-        response?.data?.items.map((item) => ({ id: item.id, value: item.name })) ?? []
+        Array.isArray(response?.data?.items) ? response.data.items : []
     }),
     getCounties: builder.query({
       query: () => {
@@ -61,11 +63,7 @@ export const accountApi = createApi({
         }
       },
       transformResponse: (response) =>
-        response?.data?.items.map((item) => ({
-          id: item.id,
-          cityId: item.cityId,
-          value: item.name
-        })) ?? []
+        Array.isArray(response?.data?.items) ? response.data.items : []
     }),
     getInstitutions: builder.query({
       query: () => {
@@ -79,7 +77,7 @@ export const accountApi = createApi({
         }
       },
       transformResponse: (response) => {
-        return response?.data?.items.map((item) => ({ id: item.id, value: item.name })) ?? []
+        return Array.isArray(response?.data?.items) ? response.data.items : []
       }
     }),
     getInstitutionTypes: builder.query({
@@ -94,8 +92,54 @@ export const accountApi = createApi({
         }
       },
       transformResponse: (response) => {
-        return response?.data?.items.map((item) => ({ id: item.id, value: item.name })) ?? []
+        return Array.isArray(response?.data?.items) ? response.data.items : []
       }
+    }),
+    addSchool: builder.mutation({
+      query: (payload) => {
+        return {
+          url: 'Schools',
+          method: 'PUT',
+          body: { entity: payload }
+        }
+      },
+      invalidatesTags: ['School']
+    }),
+    updateSchool: builder.mutation({
+      query: (payload) => {
+        return {
+          url: 'Schools',
+          method: 'PUT',
+          body: { entity: payload },
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      },
+      invalidatesTags: ['School']
+    }),
+    deleteSchool: builder.mutation({
+      query: ({ schoolId }) => {
+        return {
+          url: 'Schools',
+          method: 'DELETE',
+          params: { id: schoolId }
+        }
+      },
+      invalidatesTags: ['School']
+    }),
+    uploadShoolExcel: builder.mutation({
+      query: ({ binaryFile }) => {
+        return {
+          url: 'Schools/uploadSchoolExcel',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+          body: binaryFile
+        }
+      },
+      invalidatesTags: ['School']
     })
   })
 })
@@ -105,5 +149,9 @@ export const {
   useGetCitiesQuery,
   useGetCountiesQuery,
   useGetInstitutionsQuery,
-  useGetInstitutionTypesQuery
+  useGetInstitutionTypesQuery,
+  useAddSchoolMutation,
+  useUpdateSchoolMutation,
+  useUploadShoolExcelMutation,
+  useDeleteSchoolMutation
 } = accountApi

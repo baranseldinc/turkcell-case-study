@@ -1,7 +1,9 @@
 import { ClearOutlined, EditOutlined } from '@ant-design/icons'
-import { Button, Space } from 'antd'
-import { useMemo } from 'react'
-import { useSelector } from 'react-redux'
+import { Button, Popconfirm, Space, message } from 'antd'
+import { useCallback, useMemo } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { commitOpenModal, commitSelectedSchoolRow } from '../app/slices/accountSlice'
+import { useDeleteSchoolMutation } from '../app/services/accountApi'
 
 // a custom hook that returns column definition for using school data table
 export const useSchoolColDef = () => {
@@ -9,6 +11,19 @@ export const useSchoolColDef = () => {
   const counties = useSelector((state) => state.accountSlice.counties)
   const institutions = useSelector((state) => state.accountSlice.institutions)
   const institutionTypes = useSelector((state) => state.accountSlice.institutionTypes)
+  const dispatch = useDispatch()
+  const [deleteSchool] = useDeleteSchoolMutation()
+
+  const handleClickDelete = useCallback(async (id) => {
+    try {
+      const response = await deleteSchool({ schoolId: id }).unwrap()
+      if (response?.success) {
+        message.success('The school has been deleted successfuly')
+      }
+    } catch (error) {
+      message.error('Operation failed!')
+    }
+  }, [])
 
   const columns = useMemo(
     () => [
@@ -16,6 +31,12 @@ export const useSchoolColDef = () => {
         title: 'School ID',
         dataIndex: 'key',
         key: 'id'
+      },
+      {
+        title: 'Active ?',
+        dataIndex: 'recordStatus',
+        key: 'recordStatus',
+        render: (text) => (text === 1 ? <b style={{ color: 'green' }}>Active</b> : 'Passive')
       },
       {
         title: 'School Name',
@@ -28,7 +49,7 @@ export const useSchoolColDef = () => {
         key: 'institutionId',
         render: (text) => {
           const instituion = institutions.find((item) => item.id === text)
-          return instituion?.value ?? ''
+          return instituion?.name ?? ''
         }
       },
       {
@@ -37,7 +58,7 @@ export const useSchoolColDef = () => {
         key: 'institutionTypeId',
         render: (text) => {
           const instituionType = institutionTypes.find((item) => item.id === text)
-          return instituionType?.value ?? ''
+          return instituionType?.name ?? ''
         }
       },
       {
@@ -46,7 +67,7 @@ export const useSchoolColDef = () => {
         key: 'cityId',
         render: (text) => {
           const city = cities.find((item) => item.id === text)
-          return city?.value ?? ''
+          return city?.name ?? ''
         }
       },
       {
@@ -55,20 +76,34 @@ export const useSchoolColDef = () => {
         key: 'countyId',
         render: (text) => {
           const county = counties.find((item) => item.id === text)
-          return county?.value ?? ''
+          return county?.name ?? ''
         }
       },
       {
         title: 'Actions',
         key: 'action',
-        render: () => (
+        render: (row) => (
           <Space size="middle">
-            <Button>
+            <Button
+              onClick={() => {
+                dispatch(commitSelectedSchoolRow(row))
+                dispatch(commitOpenModal(true))
+              }}>
               <EditOutlined />
             </Button>
-            <Button>
-              <ClearOutlined />
-            </Button>
+            <Popconfirm
+              placement="left"
+              title="Are you sure to delete?"
+              description="The record will be deleted permanently ?"
+              onConfirm={() => {
+                handleClickDelete(row.id)
+              }}
+              okText="Yes"
+              cancelText="No">
+              <Button>
+                <ClearOutlined />
+              </Button>
+            </Popconfirm>
           </Space>
         )
       }

@@ -1,14 +1,19 @@
 import { createSlice } from '@reduxjs/toolkit'
 
+const initialState = {
+  cities: [],
+  counties: [],
+  institutions: [],
+  institutionTypes: [],
+  selectedSchoolRow: null,
+  openModal: false
+}
+
 const accountSlice = createSlice({
   name: 'account',
-  initialState: {
-    cities: [],
-    counties: [],
-    institutions: [],
-    institutionTypes: []
-  },
+  initialState,
   reducers: {
+    reset: () => initialState,
     commitCities: (state, cities) => {
       state.cities = [...cities.payload]
     },
@@ -20,10 +25,23 @@ const accountSlice = createSlice({
     },
     commitInstitutionTypes: (state, institutionTypes) => {
       state.institutionTypes = [...institutionTypes.payload]
+    },
+    commitSelectedSchoolRow: (state, schoolRow) => {
+      state.selectedSchoolRow = { ...schoolRow.payload }
+    },
+    commitOpenModal: (state, isOpen) => {
+      state.openModal = isOpen.payload
     }
   }
 })
 
-export const { commitCities, commitCounties, commitInstitutions, commitInstitutionTypes } =
-  accountSlice.actions
+export const {
+  reset,
+  commitCities,
+  commitCounties,
+  commitInstitutions,
+  commitInstitutionTypes,
+  commitSelectedSchoolRow,
+  commitOpenModal
+} = accountSlice.actions
 export default accountSlice.reducer

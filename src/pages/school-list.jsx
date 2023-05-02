@@ -1,11 +1,10 @@
-import { Button, Col, Pagination, Row, Space, Spin, Switch, Table } from 'antd'
+import { Button, Col, Row, Space, Spin, Switch, Table } from 'antd'
 import Title from 'antd/es/typography/Title'
 import { PlusCircleOutlined } from '@ant-design/icons'
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useSchoolColDef } from '../hooks/useSchoolColDef'
-import { AddNewSchoolModal } from '../components/add-new-school-modal'
+import { SchoolFormModal } from '../components/school-form-modal'
 import {
   useGetCitiesQuery,
   useGetCountiesQuery,
@@ -17,42 +16,43 @@ import {
   commitCities,
   commitCounties,
   commitInstitutionTypes,
-  commitInstitutions
+  commitInstitutions,
+  commitOpenModal,
+  commitSelectedSchoolRow
 } from '../app/slices/accountSlice'
 import { useDebounce } from '../hooks/useDebounce'
 
 export const SchoolList = () => {
-  const [open, setOpen] = useState(false)
   const [pageNumber, setPageNumber] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [allRecords, setAllRecords] = useState(true)
-  const [recordStatus, setRecordStatus] = useState(false)
+  const [recordStatus, setRecordStatus] = useState(true)
+  const openModal = useSelector((state) => state.accountSlice.openModal)
   const { columns } = useSchoolColDef()
-  const token = localStorage.getItem('token')
-  const navigate = useNavigate()
   const dispatch = useDispatch()
+  const token = localStorage.getItem('token')
 
   // Get options from server
   const {
     data: cityData,
     isFetching: isCityDataFetching,
     isSuccess: isCityDataSuccess
-  } = useGetCitiesQuery()
+  } = useGetCitiesQuery(null, { skip: !token })
   const {
     data: countyData,
     isFetching: isCountyDataFetching,
     isSuccess: isCountyDataSuccess
-  } = useGetCountiesQuery()
+  } = useGetCountiesQuery(null, { skip: !token })
   const {
     data: instData,
     isFetching: isInstDataFeching,
     isSuccess: isInstDataSuccess
-  } = useGetInstitutionsQuery()
+  } = useGetInstitutionsQuery(null, { skip: !token })
   const {
     data: instTypeData,
     isFetching: isInstTypeDataFeching,
     isSuccess: isInstTypeDataSuccess
-  } = useGetInstitutionTypesQuery()
+  } = useGetInstitutionTypesQuery(null, { skip: !token })
 
   const debouncedCityFetching = useDebounce(isCityDataFetching, 1000)
   const debouncedCountyFetching = useDebounce(isCountyDataFetching, 1000)
@@ -70,6 +70,12 @@ export const SchoolList = () => {
         !isInstTypeDataSuccess
     }
   )
+  const showModal = () => {
+    dispatch(commitOpenModal(true))
+  }
+  const closeModal = () => {
+    dispatch(commitOpenModal(false))
+  }
 
   useEffect(() => {
     if (isCityDataSuccess) {
@@ -94,10 +100,6 @@ export const SchoolList = () => {
       dispatch(commitInstitutionTypes(instTypeData))
     }
   }, [instTypeData])
-
-  useEffect(() => {
-    if (!token) navigate('/login')
-  }, [])
 
   useEffect(() => {
     if (!isUninitialized) refetch()
@@ -134,7 +136,7 @@ export const SchoolList = () => {
 
   const renderTable = () => (
     <>
-      <Space style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <Space style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.6em' }}>
         <Space style={{ display: 'flex', columnGap: '2.5em' }}>
           <div>
             <Switch
@@ -150,12 +152,17 @@ export const SchoolList = () => {
               onChange={(status) => {
                 setRecordStatus(status)
               }}
+              defaultChecked
               disabled={allRecords}
             />{' '}
             Active only
           </div>
         </Space>
-        <Button onClick={() => setOpen(true)}>
+        <Button
+          onClick={() => {
+            dispatch(commitSelectedSchoolRow(null))
+            showModal()
+          }}>
           <PlusCircleOutlined />
           Add New School
         </Button>
@@ -187,7 +194,7 @@ export const SchoolList = () => {
             : renderTable()}
         </Col>
       </Row>
-      <AddNewSchoolModal key={crypto.randomUUID()} isOpen={open} onCancel={() => setOpen(false)} />
+      <SchoolFormModal key={crypto.randomUUID()} isOpen={openModal} onCancel={closeModal} />
     </div>
   )
 }

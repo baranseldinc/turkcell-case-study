@@ -7,7 +7,7 @@ export const Navbar = () => {
   const navigate = useNavigate()
   const menuItems = useMemo(
     () => [
-      { key: 'list', label: 'School List', icon: <UnorderedListOutlined /> },
+      { key: '', label: 'School List', icon: <UnorderedListOutlined /> },
       { key: 'import', label: 'Import CSV File', icon: <ImportOutlined /> }
     ],
     []
