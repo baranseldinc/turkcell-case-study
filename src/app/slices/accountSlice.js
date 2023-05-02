@@ -5,20 +5,25 @@ const accountSlice = createSlice({
   initialState: {
     cities: [],
     counties: [],
-    institutions: []
+    institutions: [],
+    institutionTypes: []
   },
   reducers: {
     commitCities: (state, cities) => {
       state.cities = [...cities.payload]
     },
-    commitCounties: (state, cities) => {
-      state.counties = [...cities.payload]
+    commitCounties: (state, counties) => {
+      state.counties = [...counties.payload]
     },
-    commitInstitutions: (state, cities) => {
-      state.institutions = [...cities.payload]
+    commitInstitutions: (state, institutions) => {
+      state.institutions = [...institutions.payload]
+    },
+    commitInstitutionTypes: (state, institutionTypes) => {
+      state.institutionTypes = [...institutionTypes.payload]
     }
   }
 })
 
-export const { commitCities, commitCounties, commitInstitutions } = accountSlice.actions
+export const { commitCities, commitCounties, commitInstitutions, commitInstitutionTypes } =
+  accountSlice.actions
 export default accountSlice.reducer

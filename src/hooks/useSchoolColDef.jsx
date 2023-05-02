@@ -8,6 +8,8 @@ export const useSchoolColDef = () => {
   const cities = useSelector((state) => state.accountSlice.cities)
   const counties = useSelector((state) => state.accountSlice.counties)
   const institutions = useSelector((state) => state.accountSlice.institutions)
+  const institutionTypes = useSelector((state) => state.accountSlice.institutionTypes)
+
   const columns = useMemo(
     () => [
       {
@@ -34,7 +36,7 @@ export const useSchoolColDef = () => {
         dataIndex: 'institutionTypeId',
         key: 'institutionTypeId',
         render: (text) => {
-          const instituionType = institutions.find((item) => item.id === text)
+          const instituionType = institutionTypes.find((item) => item.id === text)
           return instituionType?.value ?? ''
         }
       },
@@ -50,7 +52,11 @@ export const useSchoolColDef = () => {
       {
         title: 'County',
         dataIndex: 'countyId',
-        key: 'countyId'
+        key: 'countyId',
+        render: (text) => {
+          const county = counties.find((item) => item.id === text)
+          return county?.value ?? ''
+        }
       },
       {
         title: 'Actions',
@@ -67,7 +73,7 @@ export const useSchoolColDef = () => {
         )
       }
     ],
-    []
+    [cities, counties, institutions, institutionTypes]
   )
   return { columns }
 }

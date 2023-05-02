@@ -1,4 +1,4 @@
-import { Button, Col, Row, Space, Spin, Table } from 'antd'
+import { Button, Col, Pagination, Row, Space, Spin, Switch, Table } from 'antd'
 import Title from 'antd/es/typography/Title'
 import { PlusCircleOutlined } from '@ant-design/icons'
 import { useEffect, useState } from 'react'
@@ -9,14 +9,24 @@ import { AddNewSchoolModal } from '../components/add-new-school-modal'
 import {
   useGetCitiesQuery,
   useGetCountiesQuery,
+  useGetInstitutionsQuery,
   useGetInstitutionTypesQuery,
   useGetPagedSchoolListQuery
 } from '../app/services/accountApi'
-import { commitCities, commitCounties, commitInstitutions } from '../app/slices/accountSlice'
+import {
+  commitCities,
+  commitCounties,
+  commitInstitutionTypes,
+  commitInstitutions
+} from '../app/slices/accountSlice'
 import { useDebounce } from '../hooks/useDebounce'
 
 export const SchoolList = () => {
   const [open, setOpen] = useState(false)
+  const [pageNumber, setPageNumber] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+  const [allRecords, setAllRecords] = useState(true)
+  const [recordStatus, setRecordStatus] = useState(false)
   const { columns } = useSchoolColDef()
   const token = localStorage.getItem('token')
   const navigate = useNavigate()
@@ -37,15 +47,29 @@ export const SchoolList = () => {
     data: instData,
     isFetching: isInstDataFeching,
     isSuccess: isInstDataSuccess
+  } = useGetInstitutionsQuery()
+  const {
+    data: instTypeData,
+    isFetching: isInstTypeDataFeching,
+    isSuccess: isInstTypeDataSuccess
   } = useGetInstitutionTypesQuery()
 
   const debouncedCityFetching = useDebounce(isCityDataFetching, 1000)
   const debouncedCountyFetching = useDebounce(isCountyDataFetching, 1000)
   const debouncedInstFetching = useDebounce(isInstDataFeching, 1000)
+  const debouncedInstTypeFetching = useDebounce(isInstTypeDataFeching, 1000)
 
-  const { data } = useGetPagedSchoolListQuery(null, {
-    skip: !token || !isCityDataSuccess || !isCountyDataSuccess || !isInstDataSuccess
-  })
+  const { data, refetch, isUninitialized } = useGetPagedSchoolListQuery(
+    { pageNumber, pageSize, allRecords, recordStatus },
+    {
+      skip:
+        !token ||
+        !isCityDataSuccess ||
+        !isCountyDataSuccess ||
+        !isInstDataSuccess ||
+        !isInstTypeDataSuccess
+    }
+  )
 
   useEffect(() => {
     if (isCityDataSuccess) {
@@ -66,8 +90,18 @@ export const SchoolList = () => {
   }, [instData])
 
   useEffect(() => {
+    if (isInstTypeDataSuccess) {
+      dispatch(commitInstitutionTypes(instTypeData))
+    }
+  }, [instTypeData])
+
+  useEffect(() => {
     if (!token) navigate('/login')
   }, [])
+
+  useEffect(() => {
+    if (!isUninitialized) refetch()
+  }, [pageNumber, pageSize])
 
   const renderProgressStatus = () => (
     <>
@@ -86,18 +120,54 @@ export const SchoolList = () => {
           <Spin /> Institution data is fetching...
         </div>
       )}
+      {debouncedInstTypeFetching && (
+        <div>
+          <Spin /> Institution type data is fetching...
+        </div>
+      )}
     </>
   )
 
   const renderTable = () => (
     <>
-      <Space style={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <Space style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Space style={{ display: 'flex', columnGap: '2.5em' }}>
+          <div>
+            <Switch
+              onChange={(status) => {
+                setAllRecords(status)
+              }}
+              defaultChecked
+            />{' '}
+            All Records
+          </div>
+          <div>
+            <Switch
+              onChange={(status) => {
+                setRecordStatus(status)
+              }}
+              disabled={allRecords}
+            />{' '}
+            Active only
+          </div>
+        </Space>
         <Button onClick={() => setOpen(true)}>
           <PlusCircleOutlined />
           Add New School
         </Button>
       </Space>
-      <Table columns={columns} dataSource={data?.rows ?? []} />
+      <Table
+        columns={columns}
+        dataSource={data?.rows ?? []}
+        pagination={{
+          total: data?.pagedProperty?.totalCount,
+          pageSize: data?.pagedProperty?.pageSize,
+          onChange: (_pageNumber, _pageSize) => {
+            setPageNumber(_pageNumber)
+            setPageSize(_pageSize)
+          }
+        }}
+      />
     </>
   )
 

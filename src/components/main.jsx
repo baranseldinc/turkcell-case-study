@@ -6,8 +6,8 @@ import './main.css'
 export const Main = (props) => {
   const { children } = props
   return (
-    <Layout>
-      <Header>
+    <Layout className="layout">
+      <Header className="header">
         <Navbar />
       </Header>
       <Content className="content">{children}</Content>

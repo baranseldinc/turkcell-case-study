@@ -10,15 +10,19 @@ export const accountApi = createApi({
   }),
   endpoints: (builder) => ({
     getPagedSchoolList: builder.query({
-      query: () => ({
+      query: ({ pageNumber, pageSize, allRecords, recordStatus }) => ({
         url: 'Schools/getPagedList',
         method: 'POST',
         body: {
-          allRecords: true,
-          recordStatus: true,
+          allRecords,
+          recordStatus,
           institutionId: 0,
           cityId: 0,
           countyId: 0
+        },
+        params: {
+          PageNumber: pageNumber,
+          PageSize: pageSize
         }
       }),
       transformResponse: (response) => {
@@ -43,9 +47,7 @@ export const accountApi = createApi({
         }
       },
       transformResponse: (response) =>
-        response?.data?.items
-          ?.filter((item) => item.recordStatus === 1)
-          .map((item) => ({ id: item.id, value: item.name })) ?? []
+        response?.data?.items.map((item) => ({ id: item.id, value: item.name })) ?? []
     }),
     getCounties: builder.query({
       query: () => {
@@ -59,9 +61,26 @@ export const accountApi = createApi({
         }
       },
       transformResponse: (response) =>
-        response?.data?.items
-          ?.filter((item) => item.recordStatus === 1)
-          .map((item) => ({ id: item.id, cityId: item.cityId, value: item.name })) ?? []
+        response?.data?.items.map((item) => ({
+          id: item.id,
+          cityId: item.cityId,
+          value: item.name
+        })) ?? []
+    }),
+    getInstitutions: builder.query({
+      query: () => {
+        return {
+          url: 'Institutions/getList',
+          method: 'POST',
+          params: { PageNumber: 1, PageSize: 0 },
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      },
+      transformResponse: (response) => {
+        return response?.data?.items.map((item) => ({ id: item.id, value: item.name })) ?? []
+      }
     }),
     getInstitutionTypes: builder.query({
       query: () => {
@@ -74,10 +93,9 @@ export const accountApi = createApi({
           }
         }
       },
-      transformResponse: (response) =>
-        response?.data?.items
-          ?.filter((item) => item.recordStatus === 1)
-          .map((item) => ({ id: item.id, value: item.name })) ?? []
+      transformResponse: (response) => {
+        return response?.data?.items.map((item) => ({ id: item.id, value: item.name })) ?? []
+      }
     })
   })
 })
@@ -86,5 +104,6 @@ export const {
   useGetPagedSchoolListQuery,
   useGetCitiesQuery,
   useGetCountiesQuery,
+  useGetInstitutionsQuery,
   useGetInstitutionTypesQuery
 } = accountApi
