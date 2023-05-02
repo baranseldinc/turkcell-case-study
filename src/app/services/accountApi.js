@@ -127,19 +127,6 @@ export const accountApi = createApi({
         }
       },
       invalidatesTags: ['School']
-    }),
-    uploadShoolExcel: builder.mutation({
-      query: ({ binaryFile }) => {
-        return {
-          url: 'Schools/uploadSchoolExcel',
-          method: 'POST',
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          },
-          body: binaryFile
-        }
-      },
-      invalidatesTags: ['School']
     })
   })
 })
@@ -152,6 +139,5 @@ export const {
   useGetInstitutionTypesQuery,
   useAddSchoolMutation,
   useUpdateSchoolMutation,
-  useUploadShoolExcelMutation,
   useDeleteSchoolMutation
 } = accountApi

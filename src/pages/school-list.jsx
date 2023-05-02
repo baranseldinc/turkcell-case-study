@@ -54,10 +54,10 @@ export const SchoolList = () => {
     isSuccess: isInstTypeDataSuccess
   } = useGetInstitutionTypesQuery(null, { skip: !token })
 
-  const debouncedCityFetching = useDebounce(isCityDataFetching, 1000)
-  const debouncedCountyFetching = useDebounce(isCountyDataFetching, 1000)
-  const debouncedInstFetching = useDebounce(isInstDataFeching, 1000)
-  const debouncedInstTypeFetching = useDebounce(isInstTypeDataFeching, 1000)
+  const debouncedCityFetching = useDebounce(isCityDataFetching, 1200)
+  const debouncedCountyFetching = useDebounce(isCountyDataFetching, 1200)
+  const debouncedInstFetching = useDebounce(isInstDataFeching, 1200)
+  const debouncedInstTypeFetching = useDebounce(isInstTypeDataFeching, 1200)
 
   const { data, refetch, isUninitialized } = useGetPagedSchoolListQuery(
     { pageNumber, pageSize, allRecords, recordStatus },

@@ -2,23 +2,21 @@ import { InboxOutlined } from '@ant-design/icons'
 import { message } from 'antd'
 import Title from 'antd/es/typography/Title'
 import Dragger from 'antd/es/upload/Dragger'
-import { useUpdateSchoolMutation } from '../app/services/accountApi'
 
 export const ImportCSVFile = () => {
-  const [updateSchoolWithCsvFile] = useUpdateSchoolMutation()
   return (
     <div>
-      <Title level={3}>Import CSV File</Title>
+      <Title level={3}>Import Excel File</Title>
       <Dragger
-        name="file"
+        name="FormFile"
         multiple={false}
+        action="http://167.71.77.240:5200/gateway/Account/Schools/uploadSchoolExcel"
+        headers={{ Authorization: `Bearer ${localStorage.getItem('token') ?? ''}` }}
         onChange={(info) => {
           const { status } = info.file
           if (status === 'done') {
             message.success(`${info.file.name} file uploaded successfully.`)
-            updateSchoolWithCsvFile()
           } else if (status === 'error') {
-            updateSchoolWithCsvFile()
             message.error(`${info.file.name} file upload failed.`)
           }
         }}>
