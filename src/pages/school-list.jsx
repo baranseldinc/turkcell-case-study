@@ -103,6 +103,10 @@ export const SchoolList = () => {
     if (!isUninitialized) refetch()
   }, [pageNumber, pageSize])
 
+  useEffect(() => {
+    setPageNumber(1)
+  }, [allRecords, recordStatus])
+
   const renderProgressStatus = () => (
     <>
       {debouncedCityFetching && (
