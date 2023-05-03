@@ -1,12 +1,10 @@
 import { Route, Routes } from 'react-router-dom'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect } from 'react'
 import { message } from 'antd'
 import { SchoolList } from './pages/school-list'
 import { ImportCSVFile } from './pages/import-schooll-list'
 
 export const App = () => {
-  const [token, setToken] = useState(null)
-
   const fetchNewToken = useCallback(async () => {
     localStorage.removeItem('token')
     try {
@@ -29,7 +27,6 @@ export const App = () => {
       const data = await response.json()
       if (data?.access_token) {
         localStorage.setItem('token', data.access_token)
-        setToken(data.access_token)
         window.dispatchEvent(new Event('storage'))
       }
     } catch (err) {
@@ -41,7 +38,6 @@ export const App = () => {
     fetchNewToken()
   }, [])
 
-  // if (!token) return 'Token is fetching...'
   return (
     <Routes>
       <Route index path="/" element={<SchoolList />} />
