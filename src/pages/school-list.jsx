@@ -27,10 +27,10 @@ export const SchoolList = () => {
   const [pageSize, setPageSize] = useState(10)
   const [allRecords, setAllRecords] = useState(true)
   const [recordStatus, setRecordStatus] = useState(true)
+  const [token, setToken] = useState(localStorage.getItem('token'))
   const openModal = useSelector((state) => state.accountSlice.openModal)
   const { columns } = useSchoolColDef()
   const dispatch = useDispatch()
-  const token = localStorage.getItem('token')
 
   // Get options from server
   const {
@@ -76,6 +76,16 @@ export const SchoolList = () => {
   const closeModal = () => {
     dispatch(commitOpenModal(false))
   }
+
+  useEffect(() => {
+    function refreshToken() {
+      setToken(localStorage.getItem('token'))
+    }
+    window.addEventListener('storage', refreshToken)
+    return () => {
+      window.removeEventListener('storage', refreshToken)
+    }
+  }, [])
 
   useEffect(() => {
     if (isCityDataSuccess) {

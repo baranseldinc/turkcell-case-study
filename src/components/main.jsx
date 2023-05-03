@@ -1,7 +1,7 @@
 import { Layout } from 'antd'
 import { Content, Footer, Header } from 'antd/es/layout/layout'
 import { Navbar } from './navbar'
-import './main.css'
+import './main.scss'
 
 export const Main = (props) => {
   const { children } = props
