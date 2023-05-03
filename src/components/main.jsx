@@ -1,5 +1,5 @@
 import { Layout } from 'antd'
-import { Content, Footer, Header } from 'antd/es/layout/layout'
+import { Content, Footer, Header } from 'antd/lib/layout/layout'
 import { Navbar } from './navbar'
 import './main.scss'
 

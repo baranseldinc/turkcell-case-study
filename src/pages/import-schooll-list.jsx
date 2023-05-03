@@ -1,7 +1,7 @@
 import { InboxOutlined } from '@ant-design/icons'
 import { message } from 'antd'
-import Title from 'antd/es/typography/Title'
-import Dragger from 'antd/es/upload/Dragger'
+import Title from 'antd/lib/typography/Title'
+import Dragger from 'antd/lib/upload/Dragger'
 
 export const ImportCSVFile = () => {
   return (
@@ -15,7 +15,7 @@ export const ImportCSVFile = () => {
         onChange={(info) => {
           const { status } = info.file
           if (status === 'done') {
-            message.success(`${info.file.name} file uploaded successfully.`)
+            message.success(`${info.file.name} file was uploaded successfully.`)
           } else if (status === 'error') {
             message.error(`${info.file.name} file upload failed.`)
           }

@@ -1,5 +1,5 @@
 import { Button, Col, Row, Space, Spin, Switch, Table } from 'antd'
-import Title from 'antd/es/typography/Title'
+import Title from 'antd/lib/typography/Title'
 import { PlusCircleOutlined } from '@ant-design/icons'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -27,7 +27,7 @@ export const SchoolList = () => {
   const [pageSize, setPageSize] = useState(10)
   const [allRecords, setAllRecords] = useState(true)
   const [recordStatus, setRecordStatus] = useState(true)
-  const [token, setToken] = useState(localStorage.getItem('token'))
+  const [token, setToken] = useState(null)
   const openModal = useSelector((state) => state.accountSlice.openModal)
   const { columns } = useSchoolColDef()
   const dispatch = useDispatch()
@@ -36,7 +36,8 @@ export const SchoolList = () => {
   const {
     data: cityData,
     isFetching: isCityDataFetching,
-    isSuccess: isCityDataSuccess
+    isSuccess: isCityDataSuccess,
+    error
   } = useGetCitiesQuery(null, { skip: !token })
   const {
     data: countyData,
@@ -78,6 +79,7 @@ export const SchoolList = () => {
   }
 
   useEffect(() => {
+    setToken(localStorage.getItem('token'))
     function refreshToken() {
       setToken(localStorage.getItem('token'))
     }
@@ -118,6 +120,12 @@ export const SchoolList = () => {
   useEffect(() => {
     setPageNumber(1)
   }, [allRecords, recordStatus])
+
+  useEffect(() => {
+    if (error?.status === 401) {
+      window.location.reload()
+    }
+  }, [error])
 
   const renderProgressStatus = () => (
     <>
@@ -199,12 +207,15 @@ export const SchoolList = () => {
           <Title level={3}>School List</Title>
         </Col>
         <Col xs={24}>
-          {debouncedCityFetching || debouncedCountyFetching || debouncedInstFetching
+          {debouncedCityFetching ||
+          debouncedCountyFetching ||
+          debouncedInstFetching ||
+          debouncedInstTypeFetching
             ? renderProgressStatus()
             : renderTable()}
         </Col>
       </Row>
-      <SchoolFormModal key={crypto.randomUUID()} isOpen={openModal} onCancel={closeModal} />
+      <SchoolFormModal isOpen={openModal} onCancel={closeModal} />
     </div>
   )
 }
