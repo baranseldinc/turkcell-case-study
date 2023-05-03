@@ -1,4 +1,4 @@
-Just clone and run `npm install` or `yarn` to download all dependencies according to the package manager you use
+Just clone and run `npm install` or `yarn` to download all dependencies according to the package manager you prefer
 
 ### `npm start`
 
