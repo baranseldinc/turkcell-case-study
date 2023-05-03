@@ -10,6 +10,6 @@ You may also see any lint errors in the console.
 
 ---
 
-If you wish you can achieve the project via this link [http://localhost:3000](http://localhost:3000) without getting project on your local machine
+If you wish you can achieve the project via this link [https://6452e4dcfde6a90008021ea7--scintillating-tanuki-8a872f.netlify.app/](Netlify App Link) without getting project on your local machine. But unfortunately while the services with which the project interacts are being served on HTTP protocol, the netlify app is being served on HTTPS protocol. That's why a MixedContent exception is being thrown during runtime.
 
 Enjoy!
