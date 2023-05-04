@@ -30,7 +30,7 @@ export const App = () => {
         window.dispatchEvent(new Event('storage'))
       }
     } catch (err) {
-      message.error('Error while getting token, please refresh the page')
+      message.error('Error while getting token, please see the console or refresh the page')
     }
   }, [])
 
