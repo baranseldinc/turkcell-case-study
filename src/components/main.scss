@@ -1,20 +1,25 @@
-.header {
-  position: sticky;
-  top: 0;
+$color-white: #fff;
+
+@mixin left-write-0 {
   left: 0;
   right: 0;
+}
+
+.header {
+  @include left-write-0;
+  position: sticky;
+  top: 0;
   z-index: 1000;
 }
 
 .content {
-  background-color: #fff;
+  background-color: $color-white;
   padding: 1em;
   padding-bottom: 4.5em;
 }
 
 .footer {
+  @include left-write-0;
   position: fixed;
-  left: 0;
-  right: 0;
   bottom: 0;
 }
